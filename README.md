@@ -18,7 +18,7 @@ E-Motion Insights is an interactive web dashboard for exploring electric-vehicle
 
 The current preview uses this shared Tableau Story:
 
-[Open the Electric Vehicle Market Performance & Insights Story]([https://public.tableau.com/shared/KRDCWPSS8?:display_count=n&:origin=viz_share_link](https://public.tableau.com/views/E-MotionInsights/EVMarketStory?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link))
+[Open the Electric Vehicle Market Performance & Insights Story](https://public.tableau.com/views/E-MotionInsights/EVMarketStory?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
 
 The Story requires an internet connection and must remain publicly accessible. **Before final submission, replace this temporary preview with the project owner's own published Tableau Story**, if they have created one.
 
