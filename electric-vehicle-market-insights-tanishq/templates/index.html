@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f7fb">
+  <meta name="description" content="An interactive exploration of electric vehicle market data, sales, manufacturers, range and battery performance.">
+  <title>E-Motion Insights | EV Market Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/e-motion-theme.css') }}">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/" aria-label="E-Motion Insights home"><span class="brand-mark">V</span><span>E<span class="brand-light">MOTION</span><small>EV MARKET EXPLORER</small></span></a>
+  <nav aria-label="Main navigation"><a href="#overview">Overview</a><a href="#analytics">Explore data</a><a href="#story">Insights</a><a href="#tableau">Tableau Story</a></nav>
+  <a class="top-cta" href="#analytics">Explore report <span>↗</span></a>
+</header>
+<section class="hero" id="top">
+  <div class="hero-copy">
+    <div class="status-line"><span class="pulse"></span> MARKET EXPLORER <span class="status-divider">/</span> DATA-LED VIEW</div>
+    <h1>Mapping the shift<br>to <em>electric mobility.</em></h1>
+    <p class="lead">A closer look at electric vehicle sales, makers, customer sentiment and battery metrics—bringing the signals in the dataset into one interactive workspace.</p>
+    <p>By Tanishq Agrawal</p>
+    <div class="hero-actions"><a class="button primary" href="#overview">View market snapshot <span>↓</span></a><a class="text-link" href="#tableau">Jump to Tableau Story <span>↗</span></a></div>
+    <div class="hero-foot"><span class="hero-foot-line"></span><span>{{ data_note }}</span></div>
+  </div>
+  <div class="hero-visual" aria-label="Decorative electric mobility illustration">
+    <div class="visual-orbit orbit-one"></div><div class="visual-orbit orbit-two"></div>
+    <div class="visual-label label-top"><span>01</span> MOBILITY DATA</div>
+    <div class="visual-core"><div class="core-symbol">V</div><span>VOLT<br>SCOPE</span></div>
+    <div class="visual-stat"><span class="stat-dot"></span><div><small>ANALYSIS MODE</small><strong>Interactive</strong></div><span class="stat-arrow">↗</span></div>
+    <div class="visual-label label-bottom">ELECTRIC VEHICLE LANDSCAPE <span>✳</span></div>
+  </div>
+</section>
+<main>
+<section id="overview" class="section overview-section">
+  <div class="section-heading"><div><p class="eyebrow">01 / SNAPSHOT</p><h2>A clearer view of the EV market.</h2></div><p class="section-note">Choose a segment to explore how the dataset changes.</p></div>
+  <form class="filters" method="get" action="/">
+    <div class="filter-intro"><span class="filter-icon">⌘</span><div><strong>Refine your view</strong><small>Filters apply to the charts below</small></div></div>
+    <label>Manufacturer<select name="manufacturer"><option>All</option>{% for v in options.manufacturers %}<option value="{{v}}" {% if filters.manufacturer==v %}selected{% endif %}>{{v}}</option>{% endfor %}</select></label>
+    <label>Market region<select name="region"><option>All</option>{% for v in options.regions %}<option value="{{v}}" {% if filters.region==v %}selected{% endif %}>{{v}}</option>{% endfor %}</select></label>
+    <label>Vehicle category<select name="category"><option>All</option>{% for v in options.categories %}<option value="{{v}}" {% if filters.category==v %}selected{% endif %}>{{v}}</option>{% endfor %}</select></label>
+    <label>Model year<select name="year"><option>All</option>{% for v in options.years %}<option value="{{v}}" {% if filters.year|string==v|string %}selected{% endif %}>{{v}}</option>{% endfor %}</select></label>
+    <div class="filter-actions"><button class="button primary" type="submit">Update view <span>→</span></button><a class="reset" href="/">Clear</a></div>
+  </form>
+  <div class="kpi-grid">{% for k in payload.kpis %}<article class="kpi"><div class="kpi-top"><span class="kpi-label">{{k.label}}</span><span class="kpi-mark">↗</span></div><strong>{{k.value}}</strong><small>{{k.note}}</small></article>{% endfor %}</div>
+</section>
+<section id="analytics" class="section analytics-section">
+  <div class="section-heading"><div><p class="eyebrow">02 / EXPLORATION</p><h2>Explore the market signals.</h2></div><div class="rows-pill"><span class="pulse"></span>{{ "{:,}".format(payload.rows) }} rows in current view</div></div>
+  <div class="chart-grid">
+    <article class="chart-card wide"><div class="chart-meta"><span>01</span><span>SALES OVER TIME</span></div><div id="sales_trend" class="chart"></div></article>
+    <article class="chart-card"><div class="chart-meta"><span>02</span><span>CATEGORY MIX</span></div><div id="categories" class="chart"></div></article>
+    <article class="chart-card"><div class="chart-meta"><span>03</span><span>MANUFACTURER RANKING</span></div><div id="manufacturers" class="chart"></div></article>
+    <article class="chart-card"><div class="chart-meta"><span>04</span><span>REGIONAL COMPARISON</span></div><div id="regions" class="chart"></div></article>
+    <article class="chart-card"><div class="chart-meta"><span>05</span><span>GEOGRAPHIC FOOTPRINT</span></div><div id="country_map" class="chart"></div></article>
+    <article class="chart-card"><div class="chart-meta"><span>06</span><span>RANGE & BATTERY</span></div><div id="range_battery" class="chart"></div></article>
+    <article class="chart-card wide"><div class="chart-meta"><span>07</span><span>PRICE & CUSTOMER RATING</span></div><div id="price_rating" class="chart"></div></article>
+  </div>
+  <p class="chart-disclaimer">Charts describe the available dataset and current filters. Record counts and sample coverage should not automatically be interpreted as total real-world market share.</p>
+</section>
+<section id="story" class="section insights-section">
+  <div class="section-heading"><div><p class="eyebrow">03 / INTERPRETATION</p><h2>From data to decisions.</h2></div><p class="section-note">A guided path from broad patterns to specific questions.</p></div>
+  <div class="story-grid">
+    <article><span class="story-number">01</span><div><h3>Establish the baseline</h3><p>Start with the number of records and the key sales, range, rating and battery measures available.</p></div><span class="story-arrow">↗</span></article>
+    <article><span class="story-number">02</span><div><h3>Compare categories</h3><p>Explore how recorded vehicles are distributed across categories and check what each category represents.</p></div><span class="story-arrow">↗</span></article>
+    <article><span class="story-number">03</span><div><h3>Study manufacturers</h3><p>Compare the manufacturers represented in the data using the selected sales measure.</p></div><span class="story-arrow">↗</span></article>
+    <article><span class="story-number">04</span><div><h3>Look across regions</h3><p>Explore the geographic footprint and how it changes with category or model-year filters.</p></div><span class="story-arrow">↗</span></article>
+    <article><span class="story-number">05</span><div><h3>Investigate battery metrics</h3><p>Compare range and battery characteristics while accounting for missing values and differing units.</p></div><span class="story-arrow">↗</span></article>
+    <article><span class="story-number">06</span><div><h3>State the takeaway</h3><p>Separate observed patterns from assumptions and document limitations before making recommendations.</p></div><span class="story-arrow">↗</span></article>
+  </div>
+  <div class="insights"><div class="insights-heading"><span class="insight-badge">✳</span><div><p class="eyebrow">AUTO-GENERATED SUMMARY</p><h3>Observations for this selection</h3></div></div><ul>{% for insight in payload.insights %}<li>{{insight}}</li>{% endfor %}</ul><p class="muted">These observations are generated from the current selection. Verify findings against the source data; they are not independently validated market statistics.</p></div>
+</section>
+<section id="tableau" class="section tableau-section">
+  <div class="section-heading"><div><p class="eyebrow">04 / TABLEAU PUBLIC</p><h2>The visual story.</h2></div><span class="live-pill"><span class="pulse"></span> PUBLISHED STORY</span></div>
+  <div class="tableau-intro"><p>Continue into the published Tableau Story to move through the dashboard, category comparisons, manufacturer analysis, geography, battery metrics and closing insights.</p><a href="https://public.tableau.com/views/E-MotionInsights/EVMarketStory?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" target="_blank" rel="noopener noreferrer">Open in Tableau Public <span>↗</span></a></div>
+  <article class="embed-card tableau-live-card"><div class="embed-topline"><span><i></i> ELECTRIC VEHICLE MARKET PERFORMANCE & INSIGHTS</span><span>TABLEAU STORY / PUBLIC</span></div><div class="tableau-frame-wrap"><iframe title="Friend's Electric Vehicle Market Performance and Insights Tableau Story" src="https://public.tableau.com/shared/KRDCWPSS8?:showVizHome=no&:display_count=n&:origin=viz_share_link" loading="lazy" allowfullscreen></iframe></div></article>
+</section>
+<section class="section conclusion"><div class="conclusion-mark">V<span>.</span></div><div><p class="eyebrow">ABOUT E-MOTION INSIGHTS</p><h2>Explore patterns. Explain the context.</h2><p>This student analytics project brings data preparation, exploratory analysis, interactive Plotly charts and Tableau storytelling together in a Flask website. Conclusions should always reflect the dataset's coverage, definitions and limitations.</p></div><a class="back-top" href="#top">Back to top ↑</a></section>
+</main>
+<footer><a class="footer-brand" href="#top">E-MOTION<span> INSIGHTS</span></a><span>Student project · Flask / pandas / Plotly / Tableau Public</span><span>Explore carefully. Interpret responsibly.</span></footer>
+<script>
+const charts = {{ payload.charts|tojson }};
+for (const [id, json] of Object.entries(charts)) {
+  const fig = JSON.parse(json);
+  if (fig.layout) {
+    fig.layout.paper_bgcolor = 'rgba(0,0,0,0)';
+    fig.layout.plot_bgcolor = 'rgba(0,0,0,0)';
+    fig.layout.font = Object.assign({}, fig.layout.font || {}, {family: 'DM Sans, sans-serif', color: '#d6e0e4'});
+    fig.layout.margin = Object.assign({l: 38, r: 24, t: 35, b: 42}, fig.layout.margin || {});
+  }
+  Plotly.newPlot(id, fig.data, fig.layout, {responsive:true, displaylogo:false, modeBarButtonsToRemove:['lasso2d','select2d']});
+}
+</script>
+</body>
+</html>

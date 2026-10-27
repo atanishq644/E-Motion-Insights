@@ -1,0 +1,1 @@
+Save screenshots of your running Flask dashboard and published Tableau dashboard/story in this folder before submitting the project. No screenshots are included yet because the app and Tableau workbook must be run/published in your environment.
